@@ -175,12 +175,6 @@ public class BaseballCardsPR2Impl implements BaseballCards {
         return it;
     }
 
-    @Override
-    public Iterator<Loan> getAllLoansByState(String entityId, LoanStatus state) throws NoLoanException {
-        return null;
-    }
-
-
     public Iterator<Loan> getAllLoansByState(String entityId, LoanStatus status) throws NoLoanException {
         Iterator<Loan> it = entityRepository.getAllLoansByState(entityId, status);
         if (it == null || !it.hasNext()) {
