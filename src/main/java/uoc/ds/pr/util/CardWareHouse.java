@@ -25,7 +25,7 @@ public class CardWareHouse {
     }
 
 
-    public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status, CardRating threeStars) {
+    public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status) {
         storeCard(new StoredCard(cardId, player, publicationYear, collection, status));
     }
     public void storeCard(StoredCard card) {
@@ -34,6 +34,10 @@ public class CardWareHouse {
             lastQueue = newQueue();
         }
         lastQueue.add(card);
+    }
+
+    public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status, CardRating rating) {
+        storeCard(new StoredCard(cardId, player, publicationYear, collection, status, rating));
     }
 
     public Queue<StoredCard> peek(){
@@ -105,6 +109,7 @@ public class CardWareHouse {
     public int numCardCases() {
         return this.storedCards.size();
     }
+
 
 
     public class Position {

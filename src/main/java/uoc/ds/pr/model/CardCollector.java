@@ -26,4 +26,8 @@ public class CardCollector {
     public double getBalance() {
         return 0;
     }
+
+    public void setPoints(int parseInt) {
+
+    }
 }

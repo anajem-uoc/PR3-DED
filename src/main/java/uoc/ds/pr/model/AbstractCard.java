@@ -1,5 +1,6 @@
 package uoc.ds.pr.model;
 
+import uoc.ds.pr.enums.CardRating;
 import uoc.ds.pr.enums.CardStatus;
 
 public abstract class AbstractCard {
@@ -9,6 +10,7 @@ public abstract class AbstractCard {
     private int publicationYear;
     private String collection;
     private CardStatus status;
+    private CardRating rating;
 
     public AbstractCard(String cardId) {
         this.cardId = cardId;
@@ -20,6 +22,14 @@ public abstract class AbstractCard {
         this.publicationYear = publicationYear;
         this.collection = collection;
         this.status = status;
+    }
+    public AbstractCard(String cardId, String player, int publicationYear, String collection, CardStatus status, CardRating rating) {
+        this(cardId);
+        this.player = player;
+        this.publicationYear = publicationYear;
+        this.collection = collection;
+        this.status = status;
+        this.rating = rating;
     }
 
     public String getCardId() {

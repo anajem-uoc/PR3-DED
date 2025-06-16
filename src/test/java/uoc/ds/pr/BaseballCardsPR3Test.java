@@ -14,8 +14,6 @@ import uoc.ds.pr.util.CardCollectorData;
 import uoc.ds.pr.util.CardCollectorHelper;
 import uoc.ds.pr.util.DateUtils;
 
-import javax.smartcardio.Card;
-
 public class BaseballCardsPR3Test extends BaseballCardsPR2Test{
     protected BaseballCardsHelperPR3 helperPR3;
 
