@@ -1,7 +1,8 @@
 package uoc.ds.pr.model;
 
-import uoc.ds.pr.CardStatus;
-import uoc.ds.pr.LoanStatus;
+import uoc.ds.pr.enums.CardStatus;
+import uoc.ds.pr.enums.LoanStatus;
+import uoc.ds.pr.enums.LoanStatus;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -42,7 +43,7 @@ public class Loan {
         return catalogedCard;
     }
 
-    public LoanStatus getStatus() {
+    public Object getStatus() {
         return this.status;
     }
 

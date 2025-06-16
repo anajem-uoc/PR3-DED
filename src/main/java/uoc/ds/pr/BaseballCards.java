@@ -5,6 +5,10 @@ import uoc.ds.pr.enums.CardRating;
 import uoc.ds.pr.enums.CardStatus;
 import uoc.ds.pr.enums.LoanStatus;
 import uoc.ds.pr.enums.WorkerRole;
+import uoc.ds.pr.exceptions.*;
+import uoc.ds.pr.model.CatalogedCard;
+import uoc.ds.pr.model.Entity;
+import uoc.ds.pr.model.Loan;
 
 import java.time.LocalDate;
 
@@ -39,5 +43,3 @@ public interface BaseballCards {
     CatalogedCard getMostShownCard() throws NoCardException;
     BaseballCardsHelper getBaseballCardsHelper();
 }
-
-
