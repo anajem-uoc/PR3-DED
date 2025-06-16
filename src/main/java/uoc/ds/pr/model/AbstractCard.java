@@ -1,6 +1,6 @@
 package uoc.ds.pr.model;
 
-import uoc.ds.pr.CardStatus;
+import uoc.ds.pr.enums.CardStatus;
 
 public abstract class AbstractCard {
 

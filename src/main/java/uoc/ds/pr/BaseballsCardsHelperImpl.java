@@ -1,6 +1,5 @@
 package uoc.ds.pr;
 
-import uoc.ds.pr.exceptions.WorkerNotFoundException;
 import uoc.ds.pr.model.Entity;
 import uoc.ds.pr.model.Player;
 import uoc.ds.pr.model.Worker;

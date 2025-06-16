@@ -1,8 +1,15 @@
 package uoc.ds.pr;
 
 import edu.uoc.ds.traversal.Iterator;
+import uoc.ds.pr.enums.CardRating;
+import uoc.ds.pr.enums.CardStatus;
+import uoc.ds.pr.enums.LoanStatus;
+import uoc.ds.pr.enums.WorkerRole;
 import uoc.ds.pr.exceptions.*;
-import uoc.ds.pr.model.*;
+import uoc.ds.pr.model.CatalogedCard;
+import uoc.ds.pr.model.Entity;
+import uoc.ds.pr.model.Loan;
+import uoc.ds.pr.model.Worker;
 import uoc.ds.pr.repository.*;
 import uoc.ds.pr.util.CardWareHouse;
 
@@ -31,6 +38,16 @@ public class BaseballCardsPR2Impl implements BaseballCards {
         entityRepository.addEntity(entityId, name, address);
     }
 
+    @Override
+    public void addWorker(String workerId, String name, String surname, WorkerRole role) {
+
+    }
+
+    @Override
+    public void storeCard(String cardId, String playerId, int publicationYear, String collection, CardStatus state, CardRating cardRating) {
+
+    }
+/*
     public void addWorker(String id, String name, String surname) {
         workerRepository.addWorker(id, name, surname);
     }
@@ -39,7 +56,7 @@ public class BaseballCardsPR2Impl implements BaseballCards {
     @Override
     public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status){
        cardRepository.storecard(cardId, player, publicationYear, collection, status);
-    }
+    }*/
 
     @Override
     public CatalogedCard catalogCard(String workerId) throws NoCardException, WorkerNotFoundException {
@@ -156,6 +173,11 @@ public class BaseballCardsPR2Impl implements BaseballCards {
             throw new NoLoanException();
         }
         return it;
+    }
+
+    @Override
+    public Iterator<Loan> getAllLoansByState(String entityId, LoanStatus state) throws NoLoanException {
+        return null;
     }
 
 

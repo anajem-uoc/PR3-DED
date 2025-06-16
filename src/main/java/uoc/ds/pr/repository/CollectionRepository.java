@@ -4,16 +4,9 @@ import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.BaseballCards;
 import uoc.ds.pr.BaseballCardsHelper;
 import uoc.ds.pr.exceptions.CollectionNotFoundException;
-import uoc.ds.pr.exceptions.EntityNotFoundException;
 import uoc.ds.pr.model.CatalogedCard;
 import uoc.ds.pr.model.Collection;
-import uoc.ds.pr.model.Entity;
-import uoc.ds.pr.util.DSArray;
 import uoc.ds.pr.util.DSLinkedList;
-
-import java.time.LocalDate;
-
-import static uoc.ds.pr.BaseballCards.MAX_NUM_ENTITIES;
 
 public class CollectionRepository {
     private BaseballCards baseballCards;

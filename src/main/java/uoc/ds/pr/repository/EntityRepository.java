@@ -5,7 +5,7 @@ import edu.uoc.ds.adt.sequential.SetLinkedListImpl;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.BaseballCards;
 import uoc.ds.pr.BaseballCardsHelper;
-import uoc.ds.pr.LoanStatus;
+import uoc.ds.pr.enums.LoanStatus;
 import uoc.ds.pr.exceptions.EntityNotFoundException;
 import uoc.ds.pr.model.CatalogedCard;
 import uoc.ds.pr.model.Entity;

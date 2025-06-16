@@ -7,6 +7,7 @@ import uoc.ds.pr.model.CatalogedCard;
 import uoc.ds.pr.model.Entity;
 import uoc.ds.pr.model.Loan;
 import uoc.ds.pr.util.DSLinkedList;
+
 import java.time.LocalDate;
 
 public class LoanRepository {

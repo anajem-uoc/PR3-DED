@@ -4,7 +4,7 @@ import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.adt.sequential.Queue;
 import edu.uoc.ds.adt.sequential.QueueArrayImpl;
 import edu.uoc.ds.traversal.Iterator;
-import uoc.ds.pr.CardStatus;
+import uoc.ds.pr.enums.CardStatus;
 import uoc.ds.pr.model.StoredCard;
 
 import static uoc.ds.pr.BaseballCards.MAX_CARD_IN_STOREDCARDCASE;
