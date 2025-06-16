@@ -1,2 +1,4 @@
-package uoc.ds.pr.exceptions;public class AuctionClosedException {
+package uoc.ds.pr.exceptions;
+
+public class AuctionClosedException extends DSException {
 }

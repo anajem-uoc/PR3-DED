@@ -4,6 +4,9 @@ import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.enums.AuctionType;
 import uoc.ds.pr.enums.CollectorLevel;
 import uoc.ds.pr.enums.WorkerRole;
+import uoc.ds.pr.model.Bid;
+import uoc.ds.pr.model.CardCollector;
+import uoc.ds.pr.exceptions.*;
 
 import java.time.LocalDate;
 
@@ -35,4 +38,3 @@ public interface BaseballCardsPR3 extends BaseballCards{
     Iterator<CardCollector> recommendations(String collectorId) throws CardCollectorNotFoundException, NoFollowedException;
     BaseballCardsHelperPR3 getBaseballCardsHelperPR3();
 }
-
