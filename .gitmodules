@@ -1,0 +1,3 @@
+[submodule "DSLib"]
+	path = DSLib
+	url = https://eimtgit.uoc.edu/DS/DSLib.git
