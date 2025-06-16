@@ -4,6 +4,7 @@ import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.adt.sequential.Queue;
 import edu.uoc.ds.adt.sequential.QueueArrayImpl;
 import edu.uoc.ds.traversal.Iterator;
+import uoc.ds.pr.enums.CardRating;
 import uoc.ds.pr.enums.CardStatus;
 import uoc.ds.pr.model.StoredCard;
 
@@ -24,7 +25,7 @@ public class CardWareHouse {
     }
 
 
-    public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status) {
+    public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status, CardRating threeStars) {
         storeCard(new StoredCard(cardId, player, publicationYear, collection, status));
     }
     public void storeCard(StoredCard card) {
