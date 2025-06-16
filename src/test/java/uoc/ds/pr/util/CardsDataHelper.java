@@ -3,6 +3,7 @@ package uoc.ds.pr.util;
 import uoc.ds.pr.enums.CardRating;
 import uoc.ds.pr.enums.CardStatus;
 import uoc.ds.pr.BaseballCards;
+import uoc.ds.pr.model.StoredCard;
 
 public class CardsDataHelper {
 

@@ -4,7 +4,7 @@ import edu.uoc.ds.adt.sequential.Queue;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.BaseballCards;
 import uoc.ds.pr.BaseballCardsHelper;
-import uoc.ds.pr.CardStatus;
+import uoc.ds.pr.enums.CardStatus;
 import uoc.ds.pr.exceptions.CatalogedCardNotFoundException;
 import uoc.ds.pr.model.CatalogedCard;
 import uoc.ds.pr.model.Collection;

@@ -1,5 +1,7 @@
 package uoc.ds.pr;
 
+import uoc.ds.pr.model.Auction;
+import uoc.ds.pr.model.Bid;
 import uoc.ds.pr.model.CardCollector;
 
 public interface BaseballCardsHelperPR3 {

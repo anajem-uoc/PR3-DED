@@ -1,6 +1,7 @@
 package uoc.ds.pr.model;
 
 import edu.uoc.ds.traversal.Iterator;
+import uoc.ds.pr.enums.CardRating;
 import uoc.ds.pr.util.DSLinkedList;
 
 import java.util.Comparator;
@@ -66,5 +67,9 @@ public class CatalogedCard {
 
     public boolean isLoaned() {
         return isLoaned;
+    }
+
+    public CardRating getCardRating() {
+        return null;
     }
 }
