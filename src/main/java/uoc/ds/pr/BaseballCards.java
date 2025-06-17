@@ -37,7 +37,7 @@ public interface BaseballCards {
     Iterator<CatalogedCard> getAllCardsByPlayer(String player) throws NoCardException;
     Iterator<CatalogedCard> getAllCardsByCollection(String collection) throws NoCardException;
     Iterator<Loan> getAllLoansByEntity(String entityId) throws NoLoanException;
-    Iterator<Loan> getAllLoansByState(String entityId, LoanStatus state) throws NoLoanException;
+    Iterator<Loan> getAllLoansByState(String entityId, LoanStatus state) throws NoLoanException, CatalogedCardNotFoundException;
     Iterator<Loan> getAllLoansByCard(String cardId) throws NoLoanException;
     Entity getEntityTheMost() throws NoEntityException;
     CatalogedCard getMostShownCard() throws NoCardException;

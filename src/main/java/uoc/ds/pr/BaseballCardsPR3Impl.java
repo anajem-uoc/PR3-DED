@@ -8,79 +8,88 @@ import uoc.ds.pr.model.*;
 import java.time.LocalDate;
 
 public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
+    private BaseballCardsPR2Impl pr2Impl;
+
+    public BaseballCardsPR3Impl() {
+        this.pr2Impl = new BaseballCardsPR2Impl();
+    }
+
     @Override
     public void addEntity(String entityId, String name, String address) {
-
+        pr2Impl.addEntity(entityId, name, address);
     }
 
     @Override
     public void addWorker(String workerId, String name, String surname, WorkerRole role) {
-
+        pr2Impl.addWorker(workerId, name, surname, role);
     }
 
     @Override
     public void storeCard(String cardId, String playerId, int publicationYear, String collection, CardStatus state, CardRating cardRating) {
-
+        pr2Impl.storeCard(cardId, playerId, publicationYear, collection, state, cardRating);
     }
 
     @Override
     public CatalogedCard catalogCard(String workerId) throws NoCardException, WorkerNotFoundException, WorkerNotAllowedException {
-        return null;
+        return pr2Impl.catalogCard(workerId);
     }
 
     @Override
-    public Loan lendCard(String loanId, String entityId, String cardId, String workerId, LocalDate date, LocalDate expirationDate) throws EntityNotFoundException, CatalogedCardNotFoundException, WorkerNotFoundException, NoCardException, CatalogedCardAlreadyLoanedException, MaximumNumberOfLoansException, WorkerNotAllowedException, CatalogedCardAlreadyAuctionedException {
-        return null;
+    public Loan lendCard(String loanId, String entityId, String cardId, String workerId, LocalDate date, LocalDate expirationDate) 
+            throws EntityNotFoundException, CatalogedCardNotFoundException, WorkerNotFoundException, NoCardException, 
+            CatalogedCardAlreadyLoanedException, MaximumNumberOfLoansException, WorkerNotAllowedException, CatalogedCardAlreadyAuctionedException {
+        return pr2Impl.lendCard(loanId, entityId, cardId, workerId, date, expirationDate);
     }
 
     @Override
     public Loan givebackCard(String loanId, LocalDate date) throws LoanNotFoundException {
-        return null;
+        return pr2Impl.givebackCard(loanId, date);
     }
 
     @Override
-    public int timeToBeCataloged(String cardId, int boxPreparationTime, int cardCatalogTime) throws StoredCardNotFoundException, InvalidLotPreparationTimeException, InvalidCatalogTimeException {
-        return 0;
+    public int timeToBeCataloged(String cardId, int boxPreparationTime, int cardCatalogTime) 
+            throws StoredCardNotFoundException, InvalidLotPreparationTimeException, InvalidCatalogTimeException {
+        return pr2Impl.timeToBeCataloged(cardId, boxPreparationTime, cardCatalogTime);
     }
 
     @Override
     public Iterator<CatalogedCard> getAllCardsByPlayer(String player) throws NoCardException {
-        return null;
+        return pr2Impl.getAllCardsByPlayer(player);
     }
 
     @Override
     public Iterator<CatalogedCard> getAllCardsByCollection(String collection) throws NoCardException {
-        return null;
+        return pr2Impl.getAllCardsByCollection(collection);
     }
 
     @Override
     public Iterator<Loan> getAllLoansByEntity(String entityId) throws NoLoanException {
-        return null;
+        return pr2Impl.getAllLoansByEntity(entityId);
     }
 
     @Override
-    public Iterator<Loan> getAllLoansByState(String entityId, LoanStatus state) throws NoLoanException {
-        return null;
+    public Iterator<Loan> getAllLoansByState(String entityId, LoanStatus state) throws NoLoanException, CatalogedCardNotFoundException {
+        return pr2Impl.getAllLoansByState(entityId, state);
     }
 
     @Override
     public Iterator<Loan> getAllLoansByCard(String cardId) throws NoLoanException {
-        return null;
+        return pr2Impl.getAllLoansByCard(cardId);
     }
 
     @Override
     public Entity getEntityTheMost() throws NoEntityException {
-        return null;
+        return pr2Impl.getEntityTheMost();
     }
 
     @Override
     public CatalogedCard getMostShownCard() throws NoCardException {
-        return null;
+        return pr2Impl.getMostShownCard();
     }
 
     @Override
     public BaseballCardsHelper getBaseballCardsHelper() {
-        return null;
+        return pr2Impl.getBaseballCardsHelper();
     }
 
     @Override

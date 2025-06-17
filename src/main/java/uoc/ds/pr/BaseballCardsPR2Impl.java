@@ -38,34 +38,28 @@ public class BaseballCardsPR2Impl implements BaseballCards {
         entityRepository.addEntity(entityId, name, address);
     }
 
-    @Override
-    public void addWorker(String workerId, String name, String surname, WorkerRole role) {
 
+    public void addWorker(String id, String name, String surname, WorkerRole role) {
+        workerRepository.addWorker(id, name, surname, role);
+    }
+
+    public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status, CardRating cardRating){
+       cardRepository.storecard(cardId, player, publicationYear, collection, status, cardRating);
     }
 
     @Override
-    public void storeCard(String cardId, String playerId, int publicationYear, String collection, CardStatus state, CardRating cardRating) {
-
-    }
-/*
-    public void addWorker(String id, String name, String surname) {
-        workerRepository.addWorker(id, name, surname);
-    }
-
-
-    @Override
-    public void storeCard(String cardId, String player, int publicationYear, String collection, CardStatus status){
-       cardRepository.storecard(cardId, player, publicationYear, collection, status);
-    }*/
-
-    @Override
-    public CatalogedCard catalogCard(String workerId) throws NoCardException, WorkerNotFoundException {
+    public CatalogedCard catalogCard(String workerId) throws NoCardException, WorkerNotFoundException, WorkerNotAllowedException {
 
         if (!workerRepository.exist(workerId)) {
             throw new WorkerNotFoundException();
         }
         if (cardRepository.isEmpty()) {
             throw new NoCardException();
+        }
+
+        if(workerRepository.isWorkerNotCataloger(workerId))
+        {
+            throw new WorkerNotAllowedException();
         }
 
        CatalogedCard catalogedCard = cardRepository.catalogCard();
@@ -81,7 +75,7 @@ public class BaseballCardsPR2Impl implements BaseballCards {
     @Override
     public Loan lendCard(String loanId, String entityId, String cardId, String workerId, LocalDate date, LocalDate expirationDate)
             throws EntityNotFoundException, CatalogedCardNotFoundException,
-            WorkerNotFoundException, NoCardException, CatalogedCardAlreadyLoanedException, MaximumNumberOfLoansException {
+            WorkerNotFoundException, NoCardException, CatalogedCardAlreadyLoanedException, MaximumNumberOfLoansException, WorkerNotAllowedException {
 
         Entity entity = entityRepository.getEntityOrThrow(entityId);
 
@@ -92,6 +86,11 @@ public class BaseballCardsPR2Impl implements BaseballCards {
         CatalogedCard catalogedCard = cardRepository.getCatalogedCardOrThrow(cardId);
         if (catalogedCard.isLoaned()) {
             throw new CatalogedCardAlreadyLoanedException();
+        }
+        if (workerRepository.isWorkerNotLender(workerId))
+        {
+            throw new WorkerNotAllowedException();
+
         }
         Loan loan = loanRepository.addNewLoan(entity, loanId, catalogedCard, date, expirationDate);
         entityRepository.addNewLoan(loan);

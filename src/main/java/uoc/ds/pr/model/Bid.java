@@ -1,15 +1,25 @@
 package uoc.ds.pr.model;
 
 public class Bid {
+    private CardCollector cardCollector;
+    private CatalogedCard catalogedCard;
+    private double price;
+
+    public Bid(CardCollector cardCollector, CatalogedCard catalogedCard, double price) {
+        this.cardCollector = cardCollector;
+        this.catalogedCard = catalogedCard;
+        this.price = price;
+    }
+
     public CardCollector getCardCollector() {
-        return null;
+        return cardCollector;
     }
 
     public CatalogedCard getCatalogedCard() {
-        return null;
+        return catalogedCard;
     }
 
-    public int getPrice() {
-        return 0;
+    public double getPrice() {
+        return price;
     }
 }

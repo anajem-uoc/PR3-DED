@@ -2,12 +2,15 @@ package uoc.ds.pr.model;
 
 import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.adt.sequential.List;
+import uoc.ds.pr.enums.WorkerRole;
 import uoc.ds.pr.util.DSLinkedList;
 
 public class Worker {
     private String id;
     private String name;
     private String surname;
+    private WorkerRole role;
+
 
     private int totalCatalogBooks;
 
@@ -15,12 +18,13 @@ public class Worker {
     private List<Loan> loanList;
     private DSLinkedList<Loan> closedLoanList;
 
-    public Worker(String id, String name, String surname) {
+    public Worker(String id, String name, String surname, WorkerRole role) {
         setId(id);
         update(name, surname);
         catalogedCards = new DSLinkedList(CatalogedCard.CMP);
         loanList = new LinkedList<>();
         closedLoanList = new DSLinkedList<>(Loan.CMP_ID);
+        this.role = role;
     }
 
     public String getId() {
@@ -34,6 +38,8 @@ public class Worker {
     public String getName() {
         return name;
     }
+
+    public WorkerRole getRole(){return role;}
 
     public void setName(String name) {
         this.name = name;
