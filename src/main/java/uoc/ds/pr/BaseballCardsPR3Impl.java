@@ -1,17 +1,32 @@
 package uoc.ds.pr;
 
+import edu.uoc.ds.adt.nonlinear.DictionaryAVLImpl;
+import edu.uoc.ds.adt.nonlinear.PriorityQueue;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.enums.*;
 import uoc.ds.pr.exceptions.*;
 import uoc.ds.pr.model.*;
+import uoc.ds.pr.util.DSArray;
+import uoc.ds.pr.util.OrderedVector;
 
 import java.time.LocalDate;
 
+import static uoc.ds.pr.enums.LoanStatus.IN_PROGRESS;
+
 public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
+    private static final int MAX_BEST_COLLECTORS = 5;
     private BaseballCardsPR2Impl pr2Impl;
+    private DictionaryAVLImpl<String, CardCollector> collectors;
+    private DictionaryAVLImpl<String, Auction> openAuctions;
+    private DictionaryAVLImpl<String, Auction> closedAuctions;
+    private OrderedVector<CardCollector> best5CollectorsOrderedVector;
 
     public BaseballCardsPR3Impl() {
         this.pr2Impl = new BaseballCardsPR2Impl();
+        this.collectors = new DictionaryAVLImpl<>();
+        this.openAuctions = new DictionaryAVLImpl<>();
+        this.closedAuctions = new DictionaryAVLImpl<>();
+        this.best5CollectorsOrderedVector = new OrderedVector<>(MAX_BEST_COLLECTORS, (c1, c2) -> Integer.compare(c2.getFiveStarCardsCount(), c1.getFiveStarCardsCount()));
     }
 
     @Override
@@ -94,7 +109,11 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
 
     @Override
     public CardCollector addCollector(String collectorId, String name, String surname, LocalDate birthday, double balance) {
-        return null;
+        CardCollector newCollector = new CardCollector(collectorId, name, surname, birthday, balance);
+        this.collectors.put(collectorId, newCollector);
+
+        this.best5CollectorsOrderedVector.update(newCollector); // Add and let OrderedVector sort/manage size.
+        return newCollector;
     }
 
     @Override
@@ -104,17 +123,117 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
 
     @Override
     public CollectorLevel getLevel(String collectorId) throws CardCollectorNotFoundException {
-        return null;
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new CardCollectorNotFoundException();
+        }
+        CardCollector collector = this.collectors.get(collectorId);
+
+        return collector.getLevel();
     }
 
     @Override
-    public void addAuction(String auctionId, String cardId, String workerId, AuctionType auctionType, double price) throws CatalogedCardNotFoundException, WorkerNotFoundException, WorkerNotAllowedException, CatalogedCardAlreadyLentException, AuctionAlreadyExistsException, AuctionAlreadyExists4CardException {
+    public void addAuction(String auctionId, String cardId, String workerId, AuctionType auctionType, double price)
+            throws CatalogedCardNotFoundException, WorkerNotFoundException,
+            WorkerNotAllowedException, CatalogedCardAlreadyLentException,
+            AuctionAlreadyExistsException, AuctionAlreadyExists4CardException {
+
+        /*if (this.openAuctions.containsKey(auctionId) || this.closedAuctions.containsKey(auctionId)) {
+            throw new AuctionAlreadyExistsException();
+        }*/
+
+        /*for (Auction auc : this.openAuctions.values()) {
+            if (auc.getCardId().equals(cardId)) {
+                throw new AuctionAlreadyExists4CardException();
+            }
+        }
+        // Also check closedAuctions, as a card might be in a closed-type auction that's still "active"
+        for (Auction auc : this.closedAuctions.values()) {
+            if (auc.getCardId().equals(cardId)) {
+                throw new AuctionAlreadyExists4CardException();
+            }
+        }*/
+
+        Worker worker = pr2Impl.getBaseballCardsHelper().getWorker(workerId);
+        if (worker == null) {
+            throw new WorkerNotFoundException();
+        }
+
+        if (worker.getRole() != WorkerRole.AUCTIONEER && worker.getRole() != WorkerRole.CATALOGER) {
+            throw new WorkerNotAllowedException();
+        }
+
+        try {
+            Iterator<Loan> loans = pr2Impl.getAllLoansByCard(cardId);
+            while (loans.hasNext()) {
+                if (loans.next().getStatus() == IN_PROGRESS) {
+                    throw new CatalogedCardAlreadyLentException();
+                }
+            }
+        } catch (NoLoanException e) {
+            // No loans for this card
+        }
+
+
+        Player dummyPlayer = new Player("dummyPlayerId", "Dummy Player Name");
+        CatalogedCard cardForAuction = new CatalogedCard(cardId);
+        Auction newAuction = new Auction(auctionId, cardForAuction, worker, auctionType, price);
+
+        if (auctionType == AuctionType.OPEN_BID) {
+            this.openAuctions.put(auctionId, newAuction);
+        } else if (auctionType == AuctionType.CLOSED_BID) {
+            this.closedAuctions.put(auctionId, newAuction);
+        }
 
     }
 
     @Override
-    public void addOpenBid(String auctionId, String collectorId, double price) throws CardCollectorNotFoundException, AuctionNotFoundException, AuctionClosedException, BidPriceTooLowException {
+    public void addOpenBid(String auctionId, String collectorId, double price)
+            throws CardCollectorNotFoundException, AuctionNotFoundException,
+            AuctionClosedException, BidPriceTooLowException {
 
+        /*if (!this.openAuctions.containsKey(auctionId)) {
+            throw new AuctionNotFoundException();
+        }*/
+        //Atencion!
+        Auction auction = this.openAuctions.get(auctionId);
+
+        if (auction.getStatus() != Auction.AuctionStatus.OPEN) {
+            throw new AuctionClosedException();
+        }
+
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new CardCollectorNotFoundException();
+        }
+        CardCollector collector = this.collectors.get(collectorId);
+
+
+        Bid currentHighestBid = auction.getHighestBid();
+        if (currentHighestBid != null) {
+            if (price <= currentHighestBid.getPrice()) {
+                throw new BidPriceTooLowException();
+            }
+        } else {
+
+            if (auction.getBids().isEmpty()) {
+                if (price < auction.getCurrentOrStartingPrice()) {
+                    throw new BidPriceTooLowException();
+                }
+            }
+        }
+
+        // Consolidated check:
+        if (currentHighestBid == null) { // First bid
+            if (price < auction.getCurrentOrStartingPrice()) {
+                throw new BidPriceTooLowException();
+            }
+        } else { // Subsequent bids
+            if (price <= currentHighestBid.getPrice()) {
+                throw new BidPriceTooLowException();
+            }
+        }
+
+        Bid newBid = new Bid(auctionId, collectorId, collector, price);
+        auction.addBid(newBid);
     }
 
     @Override
@@ -174,6 +293,18 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
 
     @Override
     public BaseballCardsHelperPR3 getBaseballCardsHelperPR3() {
-        return null;
+        return new BaseballCardsHelperPR3Impl(this);
+    }
+
+    public DictionaryAVLImpl<String, CardCollector> getCollectors() {
+        return this.collectors;
+    }
+
+    public DictionaryAVLImpl<String, Auction> getOpenAuctions() {
+        return this.openAuctions;
+    }
+
+    public DictionaryAVLImpl<String, Auction > getClosedAuctions() {
+        return this.closedAuctions;
     }
 }

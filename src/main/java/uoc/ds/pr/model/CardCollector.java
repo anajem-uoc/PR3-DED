@@ -18,6 +18,8 @@ public class CardCollector {
     private LinkedList<CatalogedCard> cards;
     private LinkedList<CardCollector> followers;
     private LinkedList<CardCollector> followings;
+    private int fiveStarCardsCount;
+    private CollectorLevel level;
 
     public CardCollector(String collectorId, String name, String surname, LocalDate birthday, double balance) {
         this.collectorId = collectorId;
@@ -30,6 +32,8 @@ public class CardCollector {
         this.cards = new LinkedList<>();
         this.followers = new LinkedList<>();
         this.followings = new LinkedList<>();
+        this.fiveStarCardsCount = 0;
+        this.level = CollectorLevel.BRONZE;
     }
 
     public String getCollectorId() {
@@ -52,6 +56,10 @@ public class CardCollector {
         return balance;
     }
 
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
     public void updatePoints(int points) {
         this.points += points;
     }
@@ -68,6 +76,9 @@ public class CardCollector {
         } else {
             return CollectorLevel.BRONZE;
         }
+    }
+    public void setLevel(CollectorLevel level) {
+        this.level = level;
     }
 
     public int getPoints() {
@@ -102,13 +113,43 @@ public class CardCollector {
     }
 
     public boolean hasCard(String cardId) {
-        for (Iterator<CatalogedCard> it = cards.values(); it.hasNext();) {
+        for (Iterator<CatalogedCard> it = cards.values(); it.hasNext(); ) {
             CatalogedCard card = it.next();
             if (card.getCardId().equals(cardId)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public DictionaryAVLImpl<String, CatalogedCard> getWishList() {
+        return wishlist;
+    }
+
+    public LinkedList<CatalogedCard> getOwnedCards() {
+        return cards;
+    }
+
+    public LinkedList<CardCollector> getFollowersList() {
+        return followers;
+    }
+
+    public LinkedList<CardCollector> getFollowingsList() {
+        return followings;
+    }
+
+    public int getFiveStarCardsCount() {
+        return fiveStarCardsCount;
+    }
+
+    public void incrementFiveStarCardsCount() {
+        this.fiveStarCardsCount++;
+    }
+
+    public void decrementFiveStarCardsCount() {
+        if (this.fiveStarCardsCount > 0) {
+            this.fiveStarCardsCount--;
+        }
     }
 
     public void addFollower(CardCollector follower) {
@@ -137,5 +178,10 @@ public class CardCollector {
 
     public void decreaseBalance(double amount) {
         this.balance -= amount;
+    }
+
+    public int compareTo(CardCollector other) {
+        // Descending order by fiveStarCardsCount
+        return Integer.compare(other.fiveStarCardsCount, this.fiveStarCardsCount);
     }
 }
