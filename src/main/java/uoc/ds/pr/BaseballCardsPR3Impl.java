@@ -2,6 +2,8 @@ package uoc.ds.pr;
 
 import edu.uoc.ds.adt.nonlinear.DictionaryAVLImpl;
 import edu.uoc.ds.adt.nonlinear.PriorityQueue;
+import edu.uoc.ds.adt.sequential.LinkedList;
+import edu.uoc.ds.adt.sequential.List;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.enums.*;
 import uoc.ds.pr.exceptions.*;
@@ -117,8 +119,21 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
     }
 
     @Override
-    public Iterator getWorkersByRole(WorkerRole role) throws NoWorkerException {
-        return null;
+    public Iterator<Worker> getWorkersByRole(WorkerRole role) throws NoWorkerException {
+        Iterator<Worker> allWorkers =  this.pr2Impl.workerRepository.getWorkers().values();
+        List<Worker> filteredWorkers = new LinkedList<>();
+
+        while (allWorkers.hasNext()) {
+            Worker worker = allWorkers.next();
+            if (worker.getRole() == role) {
+                filteredWorkers.insertEnd(worker);
+            }
+        }
+
+        if (filteredWorkers.isEmpty()) {
+            throw new NoWorkerException();
+        }
+        return filteredWorkers.values();
     }
 
     @Override
@@ -249,11 +264,40 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
     @Override
     public void addToWishlist(String cardId, String collectorId) throws CatalogedCardNotFoundException, CardCollectorNotFoundException, CatalogedCardAlreadyInWishlistException, CardAlreadyInOwnCollectionException {
 
+        if (this.pr2Impl.cardRepository.getCatalogedCard(cardId) == null){
+            throw new CatalogedCardNotFoundException();
+        }
+
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new CardCollectorNotFoundException();
+        }
+        CardCollector collector = this.collectors.get(collectorId);
+
+        Player dummyPlayer = new Player("dummyPlayerWishlist", "Dummy Player");
+        CatalogedCard card = new CatalogedCard(cardId);
+
+        Iterator<CatalogedCard> ownedCardsIterator = collector.getOwnedCards().values();
+        while (ownedCardsIterator.hasNext()) {
+            if (ownedCardsIterator.next().getCardId().equals(cardId)) {
+                throw new CardAlreadyInOwnCollectionException();
+            }
+        }
+
+        if (collector.getWishList().containsKey(cardId)) {
+            throw new CatalogedCardAlreadyInWishlistException();
+        }
+
+        collector.getWishList().put(cardId, card); // Storing placeholder card
     }
 
     @Override
     public boolean isInWishlist(String cardId, String collectorId) throws CatalogedCardNotFoundException, CardCollectorNotFoundException {
-        return false;
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new CardCollectorNotFoundException();
+        }
+        CardCollector collector = this.collectors.get(collectorId);
+
+        return collector.getWishList().containsKey(cardId);
     }
 
     @Override
@@ -272,26 +316,6 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
     }
 
     @Override
-    public void addFollower(String collectorId, String collectorFollowerId) throws FollowerNotFound, FollowedException {
-
-    }
-
-    @Override
-    public Iterator<CardCollector> getFollowers(String collectorId) throws FollowerNotFound, FollowedException {
-        return null;
-    }
-
-    @Override
-    public Iterator<CardCollector> getFollowings(String collectorId) throws CardCollectorNotFoundException, NoFollowedException {
-        return null;
-    }
-
-    @Override
-    public Iterator<CardCollector> recommendations(String collectorId) throws CardCollectorNotFoundException, NoFollowedException {
-        return null;
-    }
-
-    @Override
     public BaseballCardsHelperPR3 getBaseballCardsHelperPR3() {
         return new BaseballCardsHelperPR3Impl(this);
     }
@@ -306,5 +330,118 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
 
     public DictionaryAVLImpl<String, Auction > getClosedAuctions() {
         return this.closedAuctions;
+    }
+    @Override
+    public void addFollower(String collectorId, String collectorFollowerId) throws FollowerNotFound, FollowedException {
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new FollowedException();
+        }
+        CardCollector followed = this.collectors.get(collectorId);
+
+        if (!this.collectors.containsKey(collectorFollowerId)) {
+            throw new FollowerNotFound();
+        }
+        CardCollector follower = this.collectors.get(collectorFollowerId);
+
+        if (collectorId.equals(collectorFollowerId)) {
+            throw new FollowedException();
+        }
+
+        boolean alreadyFollowing = false;
+        Iterator<CardCollector> currentFollowings = follower.getFollowingsList().values();
+        while (currentFollowings.hasNext()) {
+            if (currentFollowings.next().getCollectorId().equals(followed.getCollectorId())) {
+                alreadyFollowing = true;
+                break;
+            }
+        }
+
+        if (alreadyFollowing) {
+            throw new FollowedException();
+        }
+
+        followed.getFollowersList().insertEnd(follower);
+        follower.getFollowingsList().insertEnd(followed);
+    }
+
+    @Override
+    public Iterator<CardCollector> getFollowers(String collectorId) throws FollowerNotFound, FollowedException {
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new FollowedException();
+        }
+        CardCollector collector = this.collectors.get(collectorId);
+        LinkedList<CardCollector> followersList = collector.getFollowersList();
+
+        if (followersList.isEmpty()) {
+            throw new FollowerNotFound();
+        }
+
+        return followersList.values();
+    }
+
+    @Override
+    public Iterator<CardCollector> getFollowings(String collectorId) throws CardCollectorNotFoundException, NoFollowedException {
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new CardCollectorNotFoundException();
+        }
+        CardCollector collector = this.collectors.get(collectorId);
+        LinkedList<CardCollector> followingsList = collector.getFollowingsList();
+
+        if (followingsList.isEmpty()) {
+            throw new NoFollowedException();
+        }
+        return followingsList.values();
+    }
+
+    @Override
+    public Iterator<CardCollector> recommendations(String collectorId)
+            throws CardCollectorNotFoundException, NoFollowedException {
+        if (!this.collectors.containsKey(collectorId)) {
+            throw new CardCollectorNotFoundException();
+        }
+        CardCollector user = this.collectors.get(collectorId);
+
+        DictionaryAVLImpl<String, CardCollector> recommendationsMap = new DictionaryAVLImpl<>();
+        LinkedList<CardCollector> userFollowings = user.getFollowingsList();
+
+        if (userFollowings.isEmpty()) {
+            throw new NoFollowedException();
+        }
+
+        Iterator<CardCollector> firstLevelIter = userFollowings.values();
+        while (firstLevelIter.hasNext()) {
+            CardCollector firstLevelFollowing = firstLevelIter.next();
+
+            Iterator<CardCollector> secondLevelIter = firstLevelFollowing.getFollowingsList().values();
+            while (secondLevelIter.hasNext()) {
+                CardCollector secondLevelFollowing = secondLevelIter.next();
+
+                if (secondLevelFollowing.getCollectorId().equals(user.getCollectorId())) {
+                    continue;
+                }
+
+                boolean alreadyFollowsSecondLevel = false;
+                Iterator<CardCollector> userFollowingsCheckIter = user.getFollowingsList().values();
+                while (userFollowingsCheckIter.hasNext()) {
+                    if (userFollowingsCheckIter.next().getCollectorId().equals(secondLevelFollowing.getCollectorId())) {
+                        alreadyFollowsSecondLevel = true;
+                        break;
+                    }
+                }
+                if (alreadyFollowsSecondLevel) {
+                    continue;
+                }
+
+                if (!recommendationsMap.containsKey(secondLevelFollowing.getCollectorId())) {
+                    recommendationsMap.put(secondLevelFollowing.getCollectorId(), secondLevelFollowing);
+                }
+            }
+        }
+
+        if (recommendationsMap.isEmpty()) {
+            throw new NoFollowedException();
+        }
+
+        return recommendationsMap.values();
     }
 }

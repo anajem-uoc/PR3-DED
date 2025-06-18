@@ -50,6 +50,9 @@ public class WorkerRepository {
     public Worker getWorker(String id) {
         return workers.get(id);
     }
+    public DSArray<Worker> getWorkers() {
+        return workers;
+    }
 
     public Worker getWorkerOrThrow(String id) throws WorkerNotFoundException {
         Worker worker = workers.get(id);
