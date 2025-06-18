@@ -61,17 +61,17 @@ public class CardCollector {
     }
 
     public void updatePoints(int points) {
-        this.points += points;
+        this.points = points;
     }
 
     public CollectorLevel getLevel() {
-        if (points >= 10000) {
+        if (points >= 5000) {
             return CollectorLevel.DIAMOND;
-        } else if (points >= 5000) {
-            return CollectorLevel.PLATINUM;
         } else if (points >= 2000) {
-            return CollectorLevel.GOLD;
+            return CollectorLevel.PLATINUM;
         } else if (points >= 500) {
+            return CollectorLevel.GOLD;
+        } else if (points >= 200) {
             return CollectorLevel.SILVER;
         } else {
             return CollectorLevel.BRONZE;

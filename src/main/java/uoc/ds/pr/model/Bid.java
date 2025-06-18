@@ -1,16 +1,20 @@
 package uoc.ds.pr.model;
 
+import uoc.ds.pr.enums.CollectorLevel;
+
 public class Bid {
+    private  CollectorLevel collectorLevel;
     private  String auctionId;
     private  String collectorId;
     private CardCollector cardCollector;
     private CatalogedCard catalogedCard;
     private double price;
 
-    public Bid(CardCollector cardCollector, CatalogedCard catalogedCard, double price) {
-        this.cardCollector = cardCollector;
-        this.catalogedCard = catalogedCard;
-        this.price = price;
+    public Bid(String auctionId, String collectorId, CardCollector collector) {
+        this.cardCollector = collector;
+        this.collectorId = collectorId;
+        this.auctionId = auctionId;
+        this.collectorLevel = collector.getLevel();
     }
 
     public Bid(String auctionId, String collectorId, CardCollector collector, double price) {
@@ -30,5 +34,9 @@ public class Bid {
 
     public double getPrice() {
         return price;
+    }
+
+    public void setCatalogedCard(CatalogedCard catalogedCard) {
+        this.catalogedCard = catalogedCard;
     }
 }

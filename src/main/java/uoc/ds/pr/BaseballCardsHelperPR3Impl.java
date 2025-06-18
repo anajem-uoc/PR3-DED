@@ -56,12 +56,9 @@ public class BaseballCardsHelperPR3Impl implements BaseballCardsHelperPR3 {
     }
 
     public Bid getCurrentWinner(String auctionId) {
-        if (baseballCards == null) return null;
         Auction auction = getAuction(auctionId); // Use this class's getAuction method
-        if (auction == null || auction.getStatus() != Auction.AuctionStatus.OPEN) {
-            return null;
-        }
-        return auction.getHighestBid(); // Returns peek of PQ from Auction model
+
+        return auction.getHighestBid();
     }
 
     public int numFollowers(String cardCollectorId) {

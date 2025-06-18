@@ -18,10 +18,12 @@ public class CatalogedCard {
     private int copies;
     private boolean isLoaned;
     private boolean isAuctioned;
+    private CardRating cardRating;
 
     public CatalogedCard(StoredCard storedCard) {
         this.storedCard = storedCard;
         this.loanList = new DSLinkedList<>(Loan.CMP_ID);
+        this.cardRating = CardRating.ONE_STAR;
 
     }
 
@@ -78,6 +80,6 @@ public class CatalogedCard {
     }
 
     public CardRating getCardRating() {
-        return null;
+        return this.cardRating;
     }
 }

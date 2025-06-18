@@ -1,6 +1,7 @@
 package uoc.ds.pr.model;
 
 import uoc.ds.pr.enums.AuctionType;
+import uoc.ds.pr.enums.CollectorLevel;
 import uoc.ds.pr.util.OrderedVector;
 
 
@@ -18,7 +19,8 @@ public class Auction {
     private String workerId;
     private AuctionType auctionType;
     private double currentOrStartingPrice;
-    private OrderedVector<Bid> bids;
+    private OrderedVector<Bid> openBids;
+    private OrderedVector<Bid> closedBids;
     private Bid winningBid;
     private CatalogedCard card;
     private Worker worker;
@@ -42,7 +44,12 @@ public class Auction {
             this.workerId = worker.getId();
         }
 
-        this.bids = new OrderedVector<>(200, (c1, c2) -> Double.compare(c2.getPrice(), c1.getPrice()));
+        if(auctionType == AuctionType.OPEN_BID){
+            this.openBids = new OrderedVector<>(2000, (c1, c2) -> Double.compare(c1.getPrice(), c2.getPrice()));
+        }
+        else{
+            this.closedBids = new OrderedVector<>(100, (c2,c1) -> Integer.compare(c2.getCardCollector().getLevel().getValue(), c1.getCardCollector().getLevel().getValue()));
+        }
 
         this.openForBidding = true;
         this.awarded = false;
@@ -82,8 +89,8 @@ public class Auction {
         return currentOrStartingPrice;
     }
 
-    public OrderedVector<Bid> getBids() {
-        return bids;
+    public OrderedVector<Bid> getOpenBids() {
+        return openBids;
     }
 
     public Bid getWinningBid() {
@@ -136,14 +143,21 @@ public class Auction {
 
     public void addBid(Bid bid) {
         if (bid != null && this.openForBidding) {
-            this.bids.update(bid);
+
+            if(auctionType == AuctionType.OPEN_BID){
+                this.openBids.update(bid);
+            }else{
+                this.closedBids.update(bid);
+            }
         }
     }
 
     public Bid getHighestBid() {
-        if (this.bids.isEmpty()) {
-            return null;
+
+        if(this.getAuctionType() == AuctionType.OPEN_BID){
+            return this.openBids.elementAt(0);
+        }else{
+            return this.closedBids.elementAt(0);
         }
-        return this.bids.elementAt(0);
     }
 }
