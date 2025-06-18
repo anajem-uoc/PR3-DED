@@ -38,24 +38,7 @@ public class BaseballCardsHelperPR3Impl implements BaseballCardsHelperPR3 {
     }
 
     public int numClosedAuctions() {
-        if (baseballCards == null) return 0;
-        // As per prompt: "count of auctions that are no longer active (awarded or cancelled) from *all* auctions."
-        int count = 0;
-        Iterator<Auction> openIt = baseballCards.getOpenAuctions().values();
-        while(openIt.hasNext()) {
-            Auction.AuctionStatus status = openIt.next().getStatus();
-            if (status == Auction.AuctionStatus.AWARDED || status == Auction.AuctionStatus.CANCELLED) {
-                count++;
-            }
-        }
-        Iterator<Auction> closedIt = baseballCards.getClosedAuctions().values();
-        while(closedIt.hasNext()) {
-            Auction.AuctionStatus status = closedIt.next().getStatus();
-            if (status == Auction.AuctionStatus.AWARDED || status == Auction.AuctionStatus.CANCELLED) {
-                count++;
-            }
-        }
-        return count;
+        return baseballCards.getClosedAuctions().size();
     }
 
     public int numCardsInWishlist(String cardCollectorId) {

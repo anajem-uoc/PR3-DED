@@ -110,6 +110,10 @@ public class Auction {
         return this.cancelled;
     }
 
+    public void setStatus(AuctionStatus status) {
+        this.status =status;
+    }
+
     public void setWinningBid(Bid winningBid) {
         this.winningBid = winningBid;
     }

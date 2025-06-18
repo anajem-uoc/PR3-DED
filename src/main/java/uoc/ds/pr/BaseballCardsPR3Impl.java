@@ -152,31 +152,33 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
             WorkerNotAllowedException, CatalogedCardAlreadyLentException,
             AuctionAlreadyExistsException, AuctionAlreadyExists4CardException {
 
-        /*if (this.openAuctions.containsKey(auctionId) || this.closedAuctions.containsKey(auctionId)) {
+        if (this.openAuctions.containsKey(auctionId) || this.closedAuctions.containsKey(auctionId)) {
             throw new AuctionAlreadyExistsException();
-        }*/
-
-        /*for (Auction auc : this.openAuctions.values()) {
-            if (auc.getCardId().equals(cardId)) {
+        }
+        Iterator<Auction> openAuctions = this.openAuctions.values();
+        while ((openAuctions.hasNext())){
+            if (openAuctions.next().getCardId().equals(cardId)) {
                 throw new AuctionAlreadyExists4CardException();
             }
         }
-        // Also check closedAuctions, as a card might be in a closed-type auction that's still "active"
-        for (Auction auc : this.closedAuctions.values()) {
-            if (auc.getCardId().equals(cardId)) {
+        Iterator<Auction> closedAuctions = this.closedAuctions.values();
+        while ((closedAuctions.hasNext())){
+            if (closedAuctions.next().getCardId().equals(cardId)) {
                 throw new AuctionAlreadyExists4CardException();
             }
-        }*/
-
+        }
         Worker worker = pr2Impl.getBaseballCardsHelper().getWorker(workerId);
         if (worker == null) {
             throw new WorkerNotFoundException();
         }
 
-        if (worker.getRole() != WorkerRole.AUCTIONEER && worker.getRole() != WorkerRole.CATALOGER) {
+        if (worker.getRole() != WorkerRole.AUCTIONEER ) {
             throw new WorkerNotAllowedException();
         }
 
+        if (this.pr2Impl.cardRepository.getCatalogedCard(cardId) == null){
+            throw new CatalogedCardNotFoundException();
+        }
         try {
             Iterator<Loan> loans = pr2Impl.getAllLoansByCard(cardId);
             while (loans.hasNext()) {
@@ -188,10 +190,9 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
             // No loans for this card
         }
 
-
-        Player dummyPlayer = new Player("dummyPlayerId", "Dummy Player Name");
         CatalogedCard cardForAuction = new CatalogedCard(cardId);
         Auction newAuction = new Auction(auctionId, cardForAuction, worker, auctionType, price);
+        this.pr2Impl.cardRepository.getCatalogedCard(cardId).setAuctioned();
 
         if (auctionType == AuctionType.OPEN_BID) {
             this.openAuctions.put(auctionId, newAuction);
@@ -257,8 +258,72 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
     }
 
     @Override
-    public Bid award(String auctionId, String workerId) throws AuctionNotFoundException, AuctionClosedException, WorkerNotFoundException, WorkerNotAllowedException, NoBidException, InvalidBidException {
-        return null;
+    public Bid award(String auctionId, String workerId)
+            throws AuctionNotFoundException, AuctionClosedException, WorkerNotFoundException,
+            WorkerNotAllowedException, NoBidException, InvalidBidException, CardCollectorNotFoundException, CatalogedCardNotFoundException {
+
+        Auction auction = this.openAuctions.get(auctionId);
+        if (auction == null) {
+            auction = this.closedAuctions.get(auctionId);
+        }
+        if (auction == null) {
+            throw new AuctionNotFoundException();
+        }
+
+        if (auction.getStatus() == Auction.AuctionStatus.AWARDED) {
+            throw new AuctionClosedException();
+        }
+
+        Worker worker = pr2Impl.getBaseballCardsHelper().getWorker(workerId);
+        if (worker == null) {
+            throw new WorkerNotFoundException();
+        }
+        if (worker.getRole() != WorkerRole.AUCTIONEER && worker.getRole() != WorkerRole.LENDER) {
+            throw new WorkerNotAllowedException();
+        }
+
+        if (auction.getBids().isEmpty()) {
+            auction.setStatus(Auction.AuctionStatus.CANCELLED);
+            throw new NoBidException();
+        }
+
+        Bid winningBid = auction.getHighestBid();
+
+        if (winningBid == null) {
+            auction.setStatus(Auction.AuctionStatus.CANCELLED);
+            throw new NoBidException();
+        }
+
+        CardCollector winner = this.collectors.get(winningBid.getCardCollector().getCollectorId());
+        if (winner == null) {
+            throw new InvalidBidException();
+        }
+
+        if (winner.getBalance() < winningBid.getPrice()) {
+            throw new InvalidBidException();
+        }
+
+        winner.setBalance(winner.getBalance() - winningBid.getPrice());
+
+        CatalogedCard cardToTransfer = auction.getCard();
+        if (cardToTransfer == null || !cardToTransfer.getCardId().equals(auction.getCardId())) {
+            cardToTransfer = new CatalogedCard(auction.getCardId());
+        }
+
+        winner.getOwnedCards().insertEnd(cardToTransfer);
+
+        if (cardToTransfer.getCardRating() == CardRating.FIVE_STARS) {
+            this.best5CollectorsOrderedVector.delete(winner);
+            winner.incrementFiveStarCardsCount();
+            this.best5CollectorsOrderedVector.update(winner);
+        }
+
+        getLevel(winner.getCollectorId());
+
+        auction.setWinningBid(winningBid);
+        auction.setStatus(Auction.AuctionStatus.AWARDED);
+
+        return winningBid;
     }
 
     @Override
@@ -294,6 +359,9 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
     public boolean isInWishlist(String cardId, String collectorId) throws CatalogedCardNotFoundException, CardCollectorNotFoundException {
         if (!this.collectors.containsKey(collectorId)) {
             throw new CardCollectorNotFoundException();
+        }
+        if (this.pr2Impl.cardRepository.getCatalogedCard(cardId) == null){
+            throw new CatalogedCardNotFoundException();
         }
         CardCollector collector = this.collectors.get(collectorId);
 

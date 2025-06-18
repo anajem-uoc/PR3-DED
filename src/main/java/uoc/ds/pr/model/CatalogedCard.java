@@ -17,6 +17,7 @@ public class CatalogedCard {
 
     private int copies;
     private boolean isLoaned;
+    private boolean isAuctioned;
 
     public CatalogedCard(StoredCard storedCard) {
         this.storedCard = storedCard;
@@ -60,13 +61,20 @@ public class CatalogedCard {
     public void loaned() {
         isLoaned = true;
     }
-
     public void unloaned() {
         isLoaned = false;
     }
 
     public boolean isLoaned() {
         return isLoaned;
+    }
+
+    public void setAuctioned() {
+        this.isAuctioned = true;
+    }
+
+    public boolean isAuctioned() {
+        return isAuctioned;
     }
 
     public CardRating getCardRating() {

@@ -75,7 +75,7 @@ public class BaseballCardsPR2Impl implements BaseballCards {
     @Override
     public Loan lendCard(String loanId, String entityId, String cardId, String workerId, LocalDate date, LocalDate expirationDate)
             throws EntityNotFoundException, CatalogedCardNotFoundException,
-            WorkerNotFoundException, NoCardException, CatalogedCardAlreadyLoanedException, MaximumNumberOfLoansException, WorkerNotAllowedException {
+            WorkerNotFoundException, NoCardException, CatalogedCardAlreadyLoanedException, MaximumNumberOfLoansException, WorkerNotAllowedException, CatalogedCardAlreadyAuctionedException {
 
         Entity entity = entityRepository.getEntityOrThrow(entityId);
 
@@ -91,6 +91,10 @@ public class BaseballCardsPR2Impl implements BaseballCards {
         {
             throw new WorkerNotAllowedException();
 
+        }
+        if (cardRepository.getCatalogedCard(cardId).isAuctioned())
+        {
+            throw new CatalogedCardAlreadyAuctionedException();
         }
         Loan loan = loanRepository.addNewLoan(entity, loanId, catalogedCard, date, expirationDate);
         entityRepository.addNewLoan(loan);

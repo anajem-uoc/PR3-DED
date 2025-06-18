@@ -24,8 +24,8 @@ public interface BaseballCardsPR3 extends BaseballCards{
     void addOpenBid(String auctionId, String collectorId, double price) throws CardCollectorNotFoundException, AuctionNotFoundException,
             AuctionClosedException, BidPriceTooLowException;
     void addClosedBid(String auctionId, String collectorId) throws CardCollectorNotFoundException, AuctionClosedException, AuctionNotFoundException;
-    Bid award(String auctionId, String workerId) throws AuctionNotFoundException, AuctionClosedException,  WorkerNotFoundException,
-            WorkerNotAllowedException, NoBidException, InvalidBidException ;
+    Bid award(String auctionId, String workerId) throws AuctionNotFoundException, AuctionClosedException, WorkerNotFoundException,
+            WorkerNotAllowedException, NoBidException, InvalidBidException, CardCollectorNotFoundException, CatalogedCardNotFoundException;
     void addToWishlist(String cardId, String collectorId) throws CatalogedCardNotFoundException, CardCollectorNotFoundException,
             CatalogedCardAlreadyInWishlistException, CardAlreadyInOwnCollectionException ;
     boolean isInWishlist(String cardId, String collectorId) throws CatalogedCardNotFoundException, CardCollectorNotFoundException;
