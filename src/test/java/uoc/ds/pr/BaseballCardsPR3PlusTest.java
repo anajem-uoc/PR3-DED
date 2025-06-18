@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uoc.ds.pr.exceptions.*;
-import uoc.ds.pr.model.CardCollector;
 import uoc.ds.pr.util.DateUtils;
 
 public class BaseballCardsPR3PlusTest {
