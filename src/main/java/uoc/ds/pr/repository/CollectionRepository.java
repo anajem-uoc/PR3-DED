@@ -54,7 +54,7 @@ public class CollectionRepository {
 
     public int numCatalogedCardsByCollection(String collectionName) {
         Collection collection = getCollection(collectionName);
-        return (collection!=null?collection.numCatalogedCards():0);
+        return collection.numCatalogedCards();
     }
 
     public Iterator<CatalogedCard> getCatalogedCards(String collectionName) {

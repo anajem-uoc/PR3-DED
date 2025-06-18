@@ -51,4 +51,8 @@ public abstract class AbstractCard {
     public CardStatus getStatus() {
         return status;
     }
+
+    public CardRating getCardRating(){
+        return this.rating;
+    }
 }

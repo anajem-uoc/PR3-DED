@@ -23,7 +23,7 @@ public class CatalogedCard {
     public CatalogedCard(StoredCard storedCard) {
         this.storedCard = storedCard;
         this.loanList = new DSLinkedList<>(Loan.CMP_ID);
-        this.cardRating = CardRating.ONE_STAR;
+        this.cardRating = storedCard.getCardRating();
 
     }
 

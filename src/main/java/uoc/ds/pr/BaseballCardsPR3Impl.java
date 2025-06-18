@@ -111,8 +111,6 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
     public CardCollector addCollector(String collectorId, String name, String surname, LocalDate birthday, double balance) {
         CardCollector newCollector = new CardCollector(collectorId, name, surname, birthday, balance);
         this.collectors.put(collectorId, newCollector);
-
-        this.best5CollectorsOrderedVector.update(newCollector); // Add and let OrderedVector sort/manage size.
         return newCollector;
     }
 
@@ -188,7 +186,8 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
             // No loans for this card
         }
 
-        CatalogedCard cardForAuction = new CatalogedCard(cardId);
+        CatalogedCard cardForAuction = this.pr2Impl.cardRepository.getCatalogedCard(cardId);
+                //new CatalogedCard(cardId);
         Auction newAuction = new Auction(auctionId, cardForAuction, worker, auctionType, price);
         this.pr2Impl.cardRepository.getCatalogedCard(cardId).setAuctioned();
 
@@ -289,10 +288,11 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
         }
 
         winner.getOwnedCards().insertEnd(cardToTransfer);
+        winner.incrementPoints(cardToTransfer.getCardRating());
         winningBid.setCatalogedCard(cardToTransfer);
 
         if (cardToTransfer.getCardRating() == CardRating.FIVE_STARS) {
-            this.best5CollectorsOrderedVector.delete(winner);
+            //this.best5CollectorsOrderedVector.delete(winner);
             winner.incrementFiveStarCardsCount();
             this.best5CollectorsOrderedVector.update(winner);
         }
@@ -349,17 +349,34 @@ public class BaseballCardsPR3Impl implements BaseballCardsPR3 {
 
     @Override
     public void addCollectionToWishlist(String collectionId, String collectorId) throws CollectionNotFoundException, CardCollectorNotFoundException {
+        Collection collection =pr2Impl.collectionRepository.getCollectionOrThrow(collectionId);
+        CardCollector collector = collectors.get(collectorId);
+        if( collector == null){
+            throw new CardCollectorNotFoundException();
+        }
+
+        Iterator<CatalogedCard> currentCard = collection.catalogedCards();
+        while(currentCard.hasNext()){
+            collector.addCardToWishlist(currentCard.next());
+        }
 
     }
 
     @Override
     public Bid getAuctionWinner(String auctionId) throws AuctionNotFoundException, AuctionStillOpenException {
-        return null;
+
+        if(this.openAuctions.get(auctionId) == null ){
+            throw new AuctionNotFoundException();
+        }
+        if (this.openAuctions.get(auctionId).getStatus() == Auction.AuctionStatus.OPEN){
+            throw new AuctionStillOpenException();
+        }
+        return this.openAuctions.get(auctionId).getHighestBid();
     }
 
     @Override
     public Iterator best5CollectorsByRareCards() throws NoCardCollectorException {
-        return null;
+        return this.best5CollectorsOrderedVector.values();
     }
 
     @Override

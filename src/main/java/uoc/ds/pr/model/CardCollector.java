@@ -3,6 +3,7 @@ package uoc.ds.pr.model;
 import edu.uoc.ds.adt.nonlinear.DictionaryAVLImpl;
 import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.traversal.Iterator;
+import uoc.ds.pr.enums.CardRating;
 import uoc.ds.pr.enums.CollectorLevel;
 
 import java.time.LocalDate;
@@ -89,6 +90,19 @@ public class CardCollector {
         this.points = points;
     }
 
+    public void incrementPoints(CardRating rating) {
+        if (rating == CardRating.ONE_STAR) {
+            this.points = points + 100;
+        } else if (rating == CardRating.TWO_STARS) {
+            this.points = points + 200;
+        } else if (rating == CardRating.THREE_STARS) {
+            this.points = points + 300;
+        } else if (rating == CardRating.FOUR_STARS) {
+            this.points = points + 400;
+        } else if (rating == CardRating.FIVE_STARS) {
+            this.points = points + 1000;
+        }
+    }
     public void addCardToWishlist(CatalogedCard card) {
         this.wishlist.put(card.getCardId(), card);
     }
@@ -168,20 +182,4 @@ public class CardCollector {
         return followings.size();
     }
 
-    public edu.uoc.ds.traversal.Iterator<CardCollector> getFollowers() {
-        return followers.values();
-    }
-
-    public edu.uoc.ds.traversal.Iterator<CardCollector> getFollowings() {
-        return followings.values();
-    }
-
-    public void decreaseBalance(double amount) {
-        this.balance -= amount;
-    }
-
-    public int compareTo(CardCollector other) {
-        // Descending order by fiveStarCardsCount
-        return Integer.compare(other.fiveStarCardsCount, this.fiveStarCardsCount);
-    }
 }
